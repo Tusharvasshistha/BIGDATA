@@ -1,0 +1,1 @@
+sqoop export --connect jdbc:mysql://localhost/h1b --username root --password 'abcd' --table q11 --export-dir /h1b/queries/pigqueries/Q_010/p* --update-mode allowinsert --update-key job_title --input-fields-terminated-by '\t';

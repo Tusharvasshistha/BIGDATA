@@ -1,0 +1,45 @@
+2b) option_picked "2.2) Find top 5 locations in the US who have got certified visa for each year.";
+							echo -e "Enter the year (2011,2012,2013,2014,2015,2016)"
+								read var
+							    hive -e " select worksite,count(worksite) as total,year from h1b.h1b_final where year ='$var' and case_status='CERTIFIED' group by worksite,year order by total desc limit 5;"
+
+5a)option_picked "Records displayed per user selection of year-Quick method."
+							echo -e "Enter the year (2011,2012,2013,2014,2015,2016)"
+							read var
+							echo "For the selected year, top 10 job positions are:-";
+	   						hive -e "select job_title,count(job_title) as temp,year from h1b.h1b_final where year = '$var'  group by job_title,year order by temp desc limit 10";
+							
+7) option_picked "7) Create a bar graph to depict the number of applications for each year";
+							hive -e "INSERT OVERWRITE DIRECTORY '/h1b/queries/hivequeries/Q_007' row format delimited fields terminated by '\t' select case_status,year,count(year) from h1b.h1b_final group by case_status,year order by year";
+							hadoop fs -get /h1b/queries/hivequeries/Q_007/ /home/hduser/HadoopFiles/H1B_Project/Hive/;
+							gedit /home/hduser/HadoopFiles/H1B_Project/Hive/Q_007/0*;
+							
+8)  option_picked "8) Find the average Prevailing Wage for each Job for each Year (take part time and full time separate). Arrange the output in descending order - [Certified and Certified Withdrawn.]";
+							 show_submenu2_1_8
+							 while [ option2_1_8 != '' ]
+						    		do
+						    		if [[ $option2_1_8 = "" ]]; then 
+								clear;
+							    	 show_submenu2_1;break;
+						    		else		
+							       
+							    case $option2_1_8 in
+								 1) clear;
+								 echo -e "Enter the year(2011,2012,2013,2014,2015,2016)"
+								 read year
+								 echo -e "Enter the choice Full time/Part time.(Y/N)"
+								 read var	
+								 option_picked "The average wage for CERTIFIED jobs are :-";
+								 hive -e "select job_title,full_time_position,year,avg(prevailing_wage) as average from h1b.h1b_final where full_time_position ='$var' and year='$year' and case_status = 'CERTIFIED' group by job_title,full_time_position,year order by average desc";
+								 show_submenu2_1_8;	
+								 ;;
+
+								 2) clear;	
+								 echo -e "Enter the year(2011,2012,2013,2014,2015,2016)"
+								 read year
+								 echo -e "Enter the choice Full time/Part time.(Y/N)"
+								 read var
+								 option_picked "The average wage for CERTIFIED-WITHDRAWN jobs are :-";
+								 hive -e "select job_title,full_time_position,year,avg(prevailing_wage) as average from h1b.h1b_final where full_time_position ='$var' and year='$year' and case_status = 'CERTIFIED-WITHDRAWN' group by job_title,full_time_position,year order by average desc";
+								 show_submenu2_1_8;
+								 ;;							
